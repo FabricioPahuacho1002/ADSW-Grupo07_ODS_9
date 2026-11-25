@@ -1,0 +1,273 @@
+CREATE TABLE [ROL] (
+	[id_rol] INTEGER NOT NULL,
+	[nombre] VARCHAR(50) NOT NULL,
+	[descripcion] VARCHAR(150),
+	PRIMARY KEY([id_rol])
+);
+GO
+
+CREATE TABLE [EMPLEADO] (
+	[id_empleado] INTEGER NOT NULL,
+	[id_rol] INTEGER NOT NULL,
+	[dni] VARCHAR(15) NOT NULL,
+	[nombres] VARCHAR(80) NOT NULL,
+	[apellidos] VARCHAR(80) NOT NULL,
+	[telefono] VARCHAR(20),
+	[correo] VARCHAR(100),
+	[fecha_nacimiento] DATE,
+	[estado] VARCHAR(20) NOT NULL,
+	PRIMARY KEY([id_empleado])
+);
+GO
+
+CREATE TABLE [CLIENTE] (
+	[id_cliente] INTEGER NOT NULL,
+	[nombres] VARCHAR(80) NOT NULL,
+	[apellidos] VARCHAR(80) NOT NULL,
+	[tipo_documento] VARCHAR(30) NOT NULL,
+	[numero_documento] VARCHAR(20) NOT NULL,
+	[correo] VARCHAR(100),
+	[telefono] VARCHAR(20),
+	[direccion] VARCHAR(150),
+	PRIMARY KEY([id_cliente])
+);
+GO
+
+CREATE TABLE [VENTA] (
+	[id_venta] INTEGER NOT NULL,
+	[id_empleado] INTEGER NOT NULL,
+	[id_cliente] INTEGER NOT NULL,
+	[fecha_venta] DATETIME NOT NULL,
+	[total] DECIMAL(10,2) NOT NULL,
+	[estado] VARCHAR(30) NOT NULL,
+	[metodo_pago] VARCHAR(30) NOT NULL,
+	PRIMARY KEY([id_venta])
+);
+GO
+
+CREATE TABLE [BITACORA_ANULACION] (
+	[id_bitacora] INTEGER NOT NULL,
+	[id_empleado] INTEGER NOT NULL,
+	[id_boleto] INTEGER NOT NULL,
+	[motivo] VARCHAR(200) NOT NULL,
+	[fecha_hora] DATETIME NOT NULL,
+	[tipo_accion] VARCHAR(50) NOT NULL,
+	PRIMARY KEY([id_bitacora])
+);
+GO
+
+CREATE TABLE [HISTORIAL_MANTENIMIENTO] (
+	[id_mantenimiento] INTEGER NOT NULL,
+	[id_empleado] INTEGER NOT NULL,
+	[id_vehiculo] INTEGER NOT NULL,
+	[fecha] DATE NOT NULL,
+	[descripcion] VARCHAR(200) NOT NULL,
+	[taller] VARCHAR(100) NOT NULL,
+	[costo] DECIMAL(10,2) NOT NULL,
+	[tipo] VARCHAR(50) NOT NULL,
+	PRIMARY KEY([id_mantenimiento])
+);
+GO
+
+CREATE TABLE [BOLETO] (
+	[id_boleto] INTEGER NOT NULL,
+	[id_venta] INTEGER NOT NULL,
+	[id_asiento] INTEGER NOT NULL,
+	[id_viaje] INTEGER NOT NULL,
+	[estado] VARCHAR(30) NOT NULL,
+	[numero_boleto] VARCHAR(30) NOT NULL,
+	[precio] DECIMAL(10,2) NOT NULL,
+	PRIMARY KEY([id_boleto])
+);
+GO
+
+CREATE TABLE [SALDO_FAVOR] (
+	[id_saldo] INTEGER NOT NULL,
+	[id_cliente] INTEGER NOT NULL,
+	[id_boleto] INTEGER NOT NULL,
+	[estado] VARCHAR(30) NOT NULL,
+	[fecha_generacion] DATETIME NOT NULL,
+	[monto] DECIMAL(10,2) NOT NULL,
+	[fecha_vencimiento] DATE NOT NULL,
+	PRIMARY KEY([id_saldo])
+);
+GO
+
+CREATE TABLE [ASIENTO] (
+	[id_asiento] INTEGER NOT NULL,
+	[id_vehiculo] INTEGER NOT NULL,
+	[numero_asiento] INTEGER NOT NULL,
+	[tipo] VARCHAR(30) NOT NULL,
+	PRIMARY KEY([id_asiento])
+);
+GO
+
+CREATE TABLE [DOCUMENTO_VEHICULAR] (
+	[id_documento] INTEGER NOT NULL,
+	[id_vehiculo] INTEGER NOT NULL,
+	[numero_documento] VARCHAR(50) NOT NULL,
+	[tipo_documento] VARCHAR(50) NOT NULL,
+	[fecha_emision] DATE NOT NULL,
+	[fecha_vencimiento] DATE NOT NULL,
+	[estado] VARCHAR(30) NOT NULL,
+	PRIMARY KEY([id_documento])
+);
+GO
+
+CREATE TABLE [VEHICULO] (
+	[id_vehiculo] INTEGER NOT NULL,
+	[placa] VARCHAR(15) NOT NULL,
+	[marca] VARCHAR(50),
+	[modelo] VARCHAR(50) NOT NULL,
+	[capacidad] INTEGER NOT NULL,
+	[estado] VARCHAR(30) NOT NULL,
+	PRIMARY KEY([id_vehiculo])
+);
+GO
+
+CREATE TABLE [VIAJE] (
+	[id_viaje] INTEGER NOT NULL,
+	[id_vehiculo] INTEGER NOT NULL,
+	[id_ruta] INTEGER NOT NULL,
+	[id_empleado] INTEGER NOT NULL,
+	[hora_llegada] TIME NOT NULL,
+	[fecha] DATE NOT NULL,
+	[hora_salida] TIME NOT NULL,
+	[estado] VARCHAR(30) NOT NULL,
+	PRIMARY KEY([id_viaje])
+);
+GO
+
+CREATE TABLE [RUTA] (
+	[id_ruta] INTEGER NOT NULL,
+	[origen] VARCHAR(80) NOT NULL,
+	[destino] VARCHAR(80) NOT NULL,
+	[distancia_km] DECIMAL(10,2) NOT NULL,
+	[duracion_estimada] VARCHAR(50) NOT NULL,
+	PRIMARY KEY([id_ruta])
+);
+GO
+
+CREATE TABLE [ENCOMIENDA] (
+	[id_encomienda] INTEGER NOT NULL,
+	[id_viaje] INTEGER NOT NULL,
+	[remitente_nombre] VARCHAR(100) NOT NULL,
+	[destinatario_nombre] VARCHAR(100) NOT NULL,
+	[descripcion] VARCHAR(200) NOT NULL,
+	[remitente_documento] VARCHAR(20) NOT NULL,
+	[destinatario_documento] VARCHAR(20) NOT NULL,
+	[fecha_registro] DATETIME NOT NULL,
+	[costo_envio] DECIMAL(10,2) NOT NULL,
+	[peso_kg] DECIMAL(8,2) NOT NULL,
+	[estado] VARCHAR(30) NOT NULL,
+	PRIMARY KEY([id_encomienda])
+);
+GO
+
+CREATE TABLE [HISTORIAL_ESTADO_ENCOMIENDA] (
+	[id_historial] INTEGER NOT NULL,
+	[id_encomienda] INTEGER NOT NULL,
+	[id_empleado] INTEGER NOT NULL,
+	[estado_nuevo] VARCHAR(50) NOT NULL,
+	[estado_anterior] VARCHAR(50) NOT NULL,
+	[fecha_hora] DATETIME NOT NULL,
+	PRIMARY KEY([id_historial])
+);
+GO
+
+
+ALTER TABLE [EMPLEADO]
+ADD FOREIGN KEY([id_rol])
+REFERENCES [ROL]([id_rol])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [VENTA]
+ADD FOREIGN KEY([id_empleado])
+REFERENCES [EMPLEADO]([id_empleado])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [VENTA]
+ADD FOREIGN KEY([id_cliente])
+REFERENCES [CLIENTE]([id_cliente])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [BITACORA_ANULACION]
+ADD FOREIGN KEY([id_empleado])
+REFERENCES [EMPLEADO]([id_empleado])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [BITACORA_ANULACION]
+ADD FOREIGN KEY([id_boleto])
+REFERENCES [BOLETO]([id_boleto])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [HISTORIAL_MANTENIMIENTO]
+ADD FOREIGN KEY([id_empleado])
+REFERENCES [EMPLEADO]([id_empleado])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [HISTORIAL_MANTENIMIENTO]
+ADD FOREIGN KEY([id_vehiculo])
+REFERENCES [VEHICULO]([id_vehiculo])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [BOLETO]
+ADD FOREIGN KEY([id_venta])
+REFERENCES [VENTA]([id_venta])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [BOLETO]
+ADD FOREIGN KEY([id_asiento])
+REFERENCES [ASIENTO]([id_asiento])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [BOLETO]
+ADD FOREIGN KEY([id_viaje])
+REFERENCES [VIAJE]([id_viaje])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [SALDO_FAVOR]
+ADD FOREIGN KEY([id_cliente])
+REFERENCES [CLIENTE]([id_cliente])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [SALDO_FAVOR]
+ADD FOREIGN KEY([id_boleto])
+REFERENCES [BOLETO]([id_boleto])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [ASIENTO]
+ADD FOREIGN KEY([id_vehiculo])
+REFERENCES [VEHICULO]([id_vehiculo])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [DOCUMENTO_VEHICULAR]
+ADD FOREIGN KEY([id_vehiculo])
+REFERENCES [VEHICULO]([id_vehiculo])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [VIAJE]
+ADD FOREIGN KEY([id_vehiculo])
+REFERENCES [VEHICULO]([id_vehiculo])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [VIAJE]
+ADD FOREIGN KEY([id_ruta])
+REFERENCES [RUTA]([id_ruta])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [VIAJE]
+ADD FOREIGN KEY([id_empleado])
+REFERENCES [EMPLEADO]([id_empleado])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [ENCOMIENDA]
+ADD FOREIGN KEY([id_viaje])
+REFERENCES [VIAJE]([id_viaje])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
+ALTER TABLE [HISTORIAL_ESTADO_ENCOMIENDA]
+ADD FOREIGN KEY([id_encomienda])
+REFERENCES [ENCOMIENDA]([id_encomienda])
+ON UPDATE NO ACTION ON DELETE NO ACTION;
+GO
